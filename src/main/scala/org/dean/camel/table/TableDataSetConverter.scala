@@ -5,7 +5,7 @@ import org.apache.flink.table.api._
 import org.apache.flink.table.sources._
 
 /**
-  * @description: datastream与table之间的相互转化
+  * @description: dataset与table之间的相互转化
   * @author: dean
   * @create: 2019/06/14 21:57
   */
