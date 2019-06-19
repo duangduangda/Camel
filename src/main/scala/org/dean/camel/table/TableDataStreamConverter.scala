@@ -61,12 +61,14 @@ object TableDataStreamConverter {
   def sink2Csv(queryResultTable: Table,
                tableEnvironment: StreamTableEnvironment,
                sink: CsvTableSink) = {
+    // 注册输出端
     tableEnvironment.registerTableSink(
       "tableSink",
       Array("groupId", "groupName"),
       Array(Types.STRING, Types.STRING),
       sink
     )
+    // 执行输出
     queryResultTable.insertInto("tableSink")
   }
 
@@ -76,6 +78,7 @@ object TableDataStreamConverter {
       TableEnvironment.getTableEnvironment(streamEnvironment)
     // 定义数据源
     val csvTableSource = createTableSource("/Users/dean/communities.csv")
+    // 注册数据源
     tableEnvironment.registerTableSource("community", csvTableSource)
     // 执行sql查询
     val queryResultTable = tableEnvironment

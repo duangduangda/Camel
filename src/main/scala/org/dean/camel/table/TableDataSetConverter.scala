@@ -1,8 +1,13 @@
 package org.dean.camel.table
 
+import org.apache.flink.table.sources.CsvTableSource
+import org.apache.flink.types.Row
 import org.apache.flink.api.scala._
-import org.apache.flink.table.api._
-import org.apache.flink.table.sources._
+import org.apache.flink.table.api.{TableEnvironment, Types}
+
+
+
+
 
 /**
   * @description: dataset与table之间的相互转化
@@ -10,13 +15,22 @@ import org.apache.flink.table.sources._
   * @create: 2019/06/14 21:57
   */
 object TableDataSetConverter {
+  import org.apache.flink.table.api.scala.BatchTableEnvironment
+
+  def runSqlQuery(tableEnvironment: BatchTableEnvironment): Unit = {
+    val queryResultTable = tableEnvironment
+      .sqlQuery("SELECT groupId as Id,groupName as name,imageUrl as url FROM community")
+    // 按行输出
+    tableEnvironment.toDataSet[Row](queryResultTable).print()
+    // 按照形如（String,String,String）的样式输出
+    tableEnvironment.toDataSet[(String,String,String)](queryResultTable).print()
+  }
 
   def main(args: Array[String]): Unit = {
-    import org.apache.flink.types.Row
     val environment = ExecutionEnvironment.getExecutionEnvironment
     val csvTableSource = CsvTableSource
       .builder()
-      .path("/Users/dean/communities.csv")
+      .path("/Users/yaohua.dong/communities.csv")
       .field("groupId", Types.STRING)
       .field("groupName", Types.STRING)
       .field("creatorAccountId", Types.STRING)
@@ -30,12 +44,12 @@ object TableDataSetConverter {
       .build()
     val tableEnvironment = TableEnvironment.getTableEnvironment(environment)
     tableEnvironment.registerTableSource("community",csvTableSource)
-    val queryResultTable = tableEnvironment
-      .sqlQuery("SELECT groupId,groupName,imageUrl FROM community")
-    // 按行输出
-    tableEnvironment.toDataSet[Row](queryResultTable).print()
-    // 按照形如（String,String,String）的样式输出
-//    tableEnvironment.toDataSet[(String,String,String)](queryResultTable).print()
+//    runSqlQuery(tableEnvironment)
+    val community = tableEnvironment.scan("community")
+    val result = community
+        .where("groupId === '@TGS#2MKNBPYFX'")
+//      .select("groupId as id,groupName as name")
+    tableEnvironment.toDataSet[Row](result).print()
   }
 
 }
