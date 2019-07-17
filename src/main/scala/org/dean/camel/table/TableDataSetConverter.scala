@@ -4,6 +4,8 @@ import org.apache.flink.table.sources.CsvTableSource
 import org.apache.flink.types.Row
 import org.apache.flink.api.scala._
 import org.apache.flink.table.api.{TableEnvironment, Types}
+import org.apache.flink.table.api.scala.BatchTableEnvironment
+
 
 
 
@@ -15,7 +17,6 @@ import org.apache.flink.table.api.{TableEnvironment, Types}
   * @create: 2019/06/14 21:57
   */
 object TableDataSetConverter {
-  import org.apache.flink.table.api.scala.BatchTableEnvironment
 
   def runSqlQuery(tableEnvironment: BatchTableEnvironment): Unit = {
     val queryResultTable = tableEnvironment
